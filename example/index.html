@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="../video-js/video-js.css" rel="stylesheet">
+  <link href="../videojs.watermark.css" rel="stylesheet">
+  <script src="../video-js/video.dev.js"></script>
+  <script>
+    videojs.options.flash.swf = "../video-js/video-js.swf"
+  </script>
+  <!-- <script src="../videojs.watermark.js"></script> -->
+  <!-- For debugging -->
+  <script src="../src/videojs.watermark.js"></script>
+  <style>
+    p {
+      background-color: #eee;
+      border: thin solid #777;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <p>The watermark plugin display a watermark over the video. Give it a shot:</p>
+
+<video id='video_1' class='video-js vjs-default-skin' width='640' height='264' poster='http://videojs.com/img/poster.jpg' controls>
+ <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+ <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm">
+</video>
+
+<script>
+// initialize video.js
+var my_video_id = videojs('video_1');
+
+// Set value to the plugin
+my_video_id.watermark({
+  file: 'Owned_Stamp.png',
+  xpos: 50,
+  ypos: 50,
+  xrepeat: 0,
+  opacity: 0.5
+  });
+</script>
+
+</body>
+</html>
