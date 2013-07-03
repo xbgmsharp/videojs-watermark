@@ -3,7 +3,9 @@
  */
 
 // HTML5 Shiv. Must be in <head> to support older browsers.
-document.createElement('video');document.createElement('audio');
+document.createElement('video');
+document.createElement('audio');
+document.createElement('track');
 
 /**
  * Doubles as the main function for users to create a player instance and also
@@ -55,7 +57,7 @@ var videojs = vjs;
 window.videojs = window.vjs = vjs;
 
 // CDN Version. Used to target right flash swf.
-vjs.CDN_VERSION = '4.0';
+vjs.CDN_VERSION = '4.1';
 vjs.ACCESS_PROTOCOL = ('https:' == document.location.protocol ? 'https://' : 'http://');
 
 /**
@@ -91,7 +93,7 @@ vjs.options = {
 };
 
 // Set CDN Version of swf
-// The added (+) blocks the replace from changing this 4.0 string
+// The added (+) blocks the replace from changing this 4.1 string
 if (vjs.CDN_VERSION !== 'GENERATED'+'_CDN_VSN') {
   videojs.options['flash']['swf'] = vjs.ACCESS_PROTOCOL + 'vjs.zencdn.net/'+vjs.CDN_VERSION+'/video-js.swf';
 }
@@ -818,9 +820,9 @@ vjs.USER_AGENT = navigator.userAgent;
  * @type {Boolean}
  * @constant
  */
-vjs.IS_IPHONE = !!vjs.USER_AGENT.match(/iPhone/i);
-vjs.IS_IPAD = !!vjs.USER_AGENT.match(/iPad/i);
-vjs.IS_IPOD = !!vjs.USER_AGENT.match(/iPod/i);
+vjs.IS_IPHONE = (/iPhone/i).test(vjs.USER_AGENT);
+vjs.IS_IPAD = (/iPad/i).test(vjs.USER_AGENT);
+vjs.IS_IPOD = (/iPod/i).test(vjs.USER_AGENT);
 vjs.IS_IOS = vjs.IS_IPHONE || vjs.IS_IPAD || vjs.IS_IPOD;
 
 vjs.IOS_VERSION = (function(){
@@ -828,16 +830,34 @@ vjs.IOS_VERSION = (function(){
   if (match && match[1]) { return match[1]; }
 })();
 
-vjs.IS_ANDROID = !!vjs.USER_AGENT.match(/Android.*AppleWebKit/i);
+vjs.IS_ANDROID = (/Android/i).test(vjs.USER_AGENT);
 vjs.ANDROID_VERSION = (function() {
-  var match = vjs.USER_AGENT.match(/Android (\d+)\./i);
-  if (match && match[1]) {
-    return match[1];
-  }
-  return null;
-})();
+  // This matches Android Major.Minor.Patch versions
+  // ANDROID_VERSION is Major.Minor as a Number, if Minor isn't available, then only Major is returned
+  var match = vjs.USER_AGENT.match(/Android (\d+)(?:\.(\d+))?(?:\.(\d+))*/i),
+    major,
+    minor;
 
-vjs.IS_FIREFOX = function(){ return !!vjs.USER_AGENT.match('Firefox'); };
+  if (!match) {
+    return null;
+  }
+
+  major = match[1] && parseFloat(match[1]);
+  minor = match[2] && parseFloat(match[2]);
+
+  if (major && minor) {
+    return parseFloat(match[1] + '.' + match[2]);
+  } else if (major) {
+    return major;
+  } else {
+    return null;
+  }
+})();
+// Old Android is defined as Version older than 2.3, and requiring a webkit version of the android browser
+vjs.IS_OLD_ANDROID = vjs.IS_ANDROID && (/webkit/i).test(vjs.USER_AGENT) && vjs.ANDROID_VERSION < 2.3;
+
+vjs.IS_FIREFOX = (/Firefox/i).test(vjs.USER_AGENT);
+vjs.IS_CHROME = (/Chrome/i).test(vjs.USER_AGENT);
 
 
 /**
@@ -2455,22 +2475,18 @@ vjs.Player.prototype.getTagSettings = function(tag){
 
   // Get tag children settings
   if (tag.hasChildNodes()) {
-    var child, childName,
-        children = tag.childNodes,
-        i = 0,
-        j = children.length;
+    var children, child, childName, i, j;
 
-    for (; i < j; i++) {
+    children = tag.childNodes;
+
+    for (i=0,j=children.length; i<j; i++) {
       child = children[i];
       // Change case needed: http://ejohn.org/blog/nodename-case-sensitivity/
       childName = child.nodeName.toLowerCase();
-
       if (childName === 'source') {
         options['sources'].push(vjs.getAttributeValues(child));
-
       } else if (childName === 'track') {
         options['tracks'].push(vjs.getAttributeValues(child));
-
       }
     }
   }
@@ -2490,11 +2506,22 @@ vjs.Player.prototype.createEl = function(){
   // so we'll need to turn off any default tracks if we're manually doing
   // captions and subtitles. videoElement.textTracks
   if (tag.hasChildNodes()) {
-    var nrOfChildNodes = tag.childNodes.length;
-    for (var i=0,j=tag.childNodes;i<nrOfChildNodes;i++) {
-      if (j[0].nodeName.toLowerCase() == 'source' || j[0].nodeName.toLowerCase() == 'track') {
-        tag.removeChild(j[0]);
+    var nodes, nodesLength, i, node, nodeName, removeNodes;
+
+    nodes = tag.childNodes;
+    nodesLength = nodes.length;
+    removeNodes = [];
+
+    while (nodesLength--) {
+      node = nodes[nodesLength];
+      nodeName = node.nodeName.toLowerCase();
+      if (nodeName === 'source' || nodeName === 'track') {
+        removeNodes.push(node);
       }
+    }
+
+    for (i=0; i<removeNodes.length; i++) {
+      tag.removeChild(removeNodes[i]);
     }
   }
 
@@ -2545,7 +2572,7 @@ vjs.Player.prototype.loadTech = function(techName, source){
   // So we need to remove it if we're not loading HTML5
   } else if (techName !== 'Html5' && this.tag) {
     this.el_.removeChild(this.tag);
-    this.tag.player = null;
+    this.tag['player'] = null;
     this.tag = null;
   }
 
@@ -2758,7 +2785,7 @@ vjs.Player.prototype.getCache = function(){
 // Pass values to the playback tech
 vjs.Player.prototype.techCall = function(method, arg){
   // If it's not ready yet, call method when it is
-  if (this.tech && this.tech.isReady_) {
+  if (this.tech && !this.tech.isReady_) {
     this.tech.ready(function(){
       this[method](arg);
     });
@@ -4210,8 +4237,8 @@ vjs.Html5 = vjs.MediaTechController.extend({
     // In Chrome (15), if you have autoplay + a poster + no controls, the video gets hidden (but audio plays)
     // This fixes both issues. Need to wait for API, so it updates displays correctly
     player.ready(function(){
-      if (this.options_['autoplay'] && this.paused()) {
-        this.tag.poster = null; // Chrome Fix. Fixed in Chrome v16.
+      if (this.tag && this.options_['autoplay'] && this.paused()) {
+        delete this.tag['poster']; // Chrome Fix. Fixed in Chrome v16.
         this.play();
       }
     });
@@ -4241,6 +4268,8 @@ vjs.Html5.prototype.createEl = function(){
 
     // If the original tag is still there, remove it.
     if (el) {
+      el['player'] = null;
+      player.tag = null;
       player.el().removeChild(el);
       el = el.cloneNode(false);
     } else {
@@ -4375,11 +4404,17 @@ vjs.Html5.prototype.defaultMuted = function(){ return this.el_.defaultMuted; };
 /* HTML5 Support Testing ---------------------------------------------------- */
 
 vjs.Html5.isSupported = function(){
-  return !!document.createElement('video').canPlayType;
+  return !!vjs.TEST_VID.canPlayType;
 };
 
 vjs.Html5.canPlaySource = function(srcObj){
-  return !!document.createElement('video').canPlayType(srcObj.type);
+  // IE9 on Windows 7 without MediaPlayer throws an error here
+  // https://github.com/videojs/video.js/issues/519
+  try {
+    return !!vjs.TEST_VID.canPlayType(srcObj.type);
+  } catch(e) {
+    return '';
+  }
   // TODO: Check Type
   // If no Type, check ext
   // Check Media Type
@@ -4397,15 +4432,11 @@ vjs.Html5.Events = 'loadstart,suspend,abort,error,emptied,stalled,loadedmetadata
 
 // HTML5 Feature detection and Device Fixes --------------------------------- //
 
-// Android
-if (vjs.IS_ANDROID) {
-
   // Override Android 2.2 and less canPlayType method which is broken
-  if (vjs.ANDROID_VERSION < 3) {
-    document.createElement('video').constructor.prototype.canPlayType = function(type){
-      return (type && type.toLowerCase().indexOf('video/mp4') != -1) ? 'maybe' : '';
-    };
-  }
+if (vjs.IS_OLD_ANDROID) {
+  document.createElement('video').constructor.prototype.canPlayType = function(type){
+    return (type && type.toLowerCase().indexOf('video/mp4') != -1) ? 'maybe' : '';
+  };
 }
 /**
  * @fileoverview VideoJS-SWF - Custom Flash Player with HTML5-ish API
@@ -5635,11 +5666,7 @@ vjs.TextTrackMenuItem.prototype.onClick = function(){
 };
 
 vjs.TextTrackMenuItem.prototype.update = function(){
-  if (this.track.mode() == 2) {
-    this.selected(true);
-  } else {
-    this.selected(false);
-  }
+  this.selected(this.track.mode() == 2);
 };
 
 /**
@@ -5679,11 +5706,7 @@ vjs.OffTextTrackMenuItem.prototype.update = function(){
     }
   }
 
-  if (off) {
-    this.selected(true);
-  } else {
-    this.selected(false);
-  }
+  this.selected(off);
 };
 
 /* Captions Button
@@ -5892,11 +5915,7 @@ vjs.ChaptersTrackMenuItem.prototype.update = function(){
       currentTime = this.player_.currentTime();
 
   // vjs.log(currentTime, cue.startTime);
-  if (cue.startTime <= currentTime && currentTime < cue.endTime) {
-    this.selected(true);
-  } else {
-    this.selected(false);
-  }
+  this.selected(cue.startTime <= currentTime && currentTime < cue.endTime);
 };
 
 // Add Buttons to controlBar
