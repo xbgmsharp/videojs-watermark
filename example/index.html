@@ -19,7 +19,7 @@
   </style>
 </head>
 <body>
-  <p>The watermark plugin display a watermark over the video. Give it a shot:</p>
+  <p>The watermark plugin display anmn image over the video. Give it a shot:</p>
 
 <video id='video_1' class='video-js vjs-default-skin' width='640' height='264' poster='http://videojs.com/img/poster.jpg' controls>
  <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
@@ -33,6 +33,7 @@ var my_video_id = videojs('video_1');
 // Set value to the plugin
 my_video_id.watermark({
   file: 'Owned_Stamp.png',
+  //file: 'http://www.videojs.com/img/logo.png',
   xpos: 50,
   ypos: 50,
   xrepeat: 0,

@@ -46,8 +46,33 @@ console.log('watermark: Start');
     div.appendChild(img);
     img.className = 'vjs-watermark';
     img.src = options.file;
-    img.style.bottom = "0";
-    img.style.right = "0";
+    //img.style.bottom = "0";
+    //img.style.right = "0";
+    if ((options.ypos == 0) && (options.xpos == 0)) // Top left
+    {
+      img.style.top = "0";
+      img.style.left = "0";
+    }
+    else if ((options.ypos == 0) && (options.xpos == 100)) // Top right
+    {
+      img.style.top = "0";
+      img.style.right = "0";
+    }
+    else if ((options.ypos == 100) && (options.xpos == 100)) // Bottom right
+    {
+      img.style.bottom = "0";
+      img.style.right = "0";
+    }
+    else if ((options.ypos == 100) && (options.xpos == 0)) // Bottom left
+    {
+      img.style.bottom = "0";
+      img.style.left = "0";
+    }
+    else if ((options.ypos == 50) && (options.xpos == 50)) // Center
+    {
+      img.style.top = (this.width()/2)+"px";
+      img.style.left = (this.height()/2)+"px";
+    }
     div.style.opacity = options.opacity;
 
     //div.style.backgroundImage = "url("+options.file+")";
