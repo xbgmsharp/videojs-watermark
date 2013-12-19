@@ -70,8 +70,8 @@ console.log('watermark: Start');
     }
     else if ((options.ypos == 50) && (options.xpos == 50)) // Center
     {
-      img.style.top = (this.width()/2)+"px";
-      img.style.left = (this.height()/2)+"px";
+      img.style.top = (this.height()/2)+"px";
+      img.style.left = (this.width()/2)+"px";
     }
     div.style.opacity = options.opacity;
 
