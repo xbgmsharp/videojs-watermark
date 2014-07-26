@@ -16,7 +16,7 @@ Once you have your video element created, you can activate the watermark plugin.
 The plugin take 5 options 'file' and 'xpos' and 'ypos' and 'xrepeat' and 'opacity'.
 It use the CSS show the image over the video.
 
-    video.zoomrotate({
+    video.watermark({
         file: 'watermarks.png',
         xpos: 50,
         ypos: 50,
