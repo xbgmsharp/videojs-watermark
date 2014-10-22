@@ -27,7 +27,7 @@ It use the CSS show the image over the video.
 
 or
 
-    data-setup='{ "plugins": { "watermark": { "file": "watermarks.png", "xpos": "50", "xpos": "50" } } }'
+    data-setup='{ "plugins": { "watermark": { "file": "watermarks.png", "xpos": "50", "ypos": "50" } } }'
 
 Center:
     xpos: 50
