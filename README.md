@@ -22,7 +22,6 @@ It use the CSS show the image over the video.
         ypos: 50,
         xrepeat: 0,
         opacity: 0.5,
-      }
     });
 
 or
