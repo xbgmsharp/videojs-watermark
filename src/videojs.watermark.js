@@ -34,7 +34,7 @@ console.log('watermark: Start');
   videojs.plugin('watermark', function(options) {
     console.log('watermark: Register init');
 
-    var settings, video, div, img;
+    var settings, video, div, img, link;
     settings = extend(defaults, options);
 
     /* Grab the necessary DOM elements */
@@ -48,27 +48,27 @@ console.log('watermark: Start');
     img.src = options.file;
     //img.style.bottom = "0";
     //img.style.right = "0";
-    if ((options.ypos == 0) && (options.xpos == 0)) // Top left
+    if ((options.ypos === 0) && (options.xpos === 0)) // Top left
     {
       img.style.top = "0";
       img.style.left = "0";
     }
-    else if ((options.ypos == 0) && (options.xpos == 100)) // Top right
+    else if ((options.ypos === 0) && (options.xpos === 100)) // Top right
     {
       img.style.top = "0";
       img.style.right = "0";
     }
-    else if ((options.ypos == 100) && (options.xpos == 100)) // Bottom right
+    else if ((options.ypos === 100) && (options.xpos === 100)) // Bottom right
     {
       img.style.bottom = "0";
       img.style.right = "0";
     }
-    else if ((options.ypos == 100) && (options.xpos == 0)) // Bottom left
+    else if ((options.ypos === 100) && (options.xpos === 0)) // Bottom left
     {
       img.style.bottom = "0";
       img.style.left = "0";
     }
-    else if ((options.ypos == 50) && (options.xpos == 50)) // Center
+    else if ((options.ypos === 50) && (options.xpos === 50)) // Center
     {
       img.style.top = (this.height()/2)+"px";
       img.style.left = (this.width()/2)+"px";
@@ -81,8 +81,18 @@ console.log('watermark: Start');
     //div.style.backgroundRepeat = options.xrepeat;
     //div.style.opacity = (options.opacity/100);
 
-    // add the watermark to the player
-    video.appendChild(div);
+    //todo: check if options.url is an actual url?
+    if (options.clickable && options.url !== "") {
+      link = document.createElement("a");
+      link.href = options.url;
+      link.target = "_blank";
+      link.appendChild(div);
+      //add clickable watermark to the player
+      video.appendChild(link);
+    } else {
+      //add normal watermark to the player
+      video.appendChild(div);
+    }
 
     //video.oncontextmenu = function(){alert("Hello!");}
     console.log('watermark: Register end');
