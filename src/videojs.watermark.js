@@ -8,6 +8,8 @@ console.log('watermark: Start');
         ypos: 0,
         xrepeat: 0,
         opacity: 100,
+        clickable: false,
+        url: ""
     },
     extend = function() {
       var args, target, i, object, property;
@@ -81,6 +83,7 @@ console.log('watermark: Start');
     //div.style.backgroundRepeat = options.xrepeat;
     //div.style.opacity = (options.opacity/100);
 
+    //if user wants watermark to be clickable, add anchor elem
     //todo: check if options.url is an actual url?
     if (options.clickable && options.url !== "") {
       link = document.createElement("a");
