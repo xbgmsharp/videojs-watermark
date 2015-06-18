@@ -44,36 +44,45 @@ console.log('watermark: Start');
 
     // create the watermark element
     div = document.createElement('div');
-    img = document.createElement('img');
-    div.appendChild(img);
-    img.className = 'vjs-watermark';
-    img.src = options.file;
+    div.className = 'vjs-watermark';
+
+    // if text is set, display text
+    if (options.text)
+        div.textContent = options.text;
+
+    // if img is set, add img
+    if (options.file) {
+        img = document.createElement('img');
+        div.appendChild(img);
+        img.src = options.file;
+    }
+
     //img.style.bottom = "0";
     //img.style.right = "0";
     if ((options.ypos === 0) && (options.xpos === 0)) // Top left
     {
-      img.style.top = "0";
-      img.style.left = "0";
+      div.style.top = "0";
+      div.style.left = "0";
     }
     else if ((options.ypos === 0) && (options.xpos === 100)) // Top right
     {
-      img.style.top = "0";
-      img.style.right = "0";
+      div.style.top = "0";
+      div.style.right = "0";
     }
     else if ((options.ypos === 100) && (options.xpos === 100)) // Bottom right
     {
-      img.style.bottom = "0";
-      img.style.right = "0";
+      div.style.bottom = "0";
+      div.style.right = "0";
     }
     else if ((options.ypos === 100) && (options.xpos === 0)) // Bottom left
     {
-      img.style.bottom = "0";
-      img.style.left = "0";
+      div.style.bottom = "0";
+      div.style.left = "0";
     }
     else if ((options.ypos === 50) && (options.xpos === 50)) // Center
     {
-      img.style.top = (this.height()/2)+"px";
-      img.style.left = (this.width()/2)+"px";
+      div.style.top = (this.height()/2)+"px";
+      div.style.left = (this.width()/2)+"px";
     }
     div.style.opacity = options.opacity;
 
