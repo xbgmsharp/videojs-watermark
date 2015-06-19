@@ -9,7 +9,8 @@ console.log('watermark: Start');
         xrepeat: 0,
         opacity: 100,
         clickable: false,
-        url: ""
+        url: "",
+        className: 'vjs-watermark'
     },
     extend = function() {
       var args, target, i, object, property;
@@ -48,7 +49,7 @@ console.log('watermark: Start');
     // create the watermark element
     if (!div) {
         div = document.createElement('div');
-        div.className = 'vjs-watermark';
+        div.className = options.className;
     }
     else {
         //! if div already exists, empty it
