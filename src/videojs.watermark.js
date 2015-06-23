@@ -9,7 +9,8 @@ console.log('watermark: Start');
         xrepeat: 0,
         opacity: 100,
         clickable: false,
-        url: ""
+        url: "",
+        className: 'vjs-watermark'
     },
     extend = function() {
       var args, target, i, object, property;
@@ -30,21 +31,30 @@ console.log('watermark: Start');
       return target;
     };
 
+    //! global varible containing reference to the DOM element
+    var div;
+
   /**
    * register the thubmnails plugin
    */
   videojs.plugin('watermark', function(options) {
     console.log('watermark: Register init');
 
-    var settings, video, div, img, link;
+    var settings, video, img, link;
     settings = extend(defaults, options);
 
     /* Grab the necessary DOM elements */
     video = this.el();
 
     // create the watermark element
-    div = document.createElement('div');
-    div.className = 'vjs-watermark';
+    if (!div) {
+        div = document.createElement('div');
+        div.className = options.className;
+    }
+    else {
+        //! if div already exists, empty it
+        div.innerHTML = '';
+    }
 
     // if text is set, display text
     if (options.text)
