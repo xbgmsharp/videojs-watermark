@@ -10,7 +10,9 @@ console.log('watermark: Start');
         opacity: 100,
         clickable: false,
         url: "",
-        className: 'vjs-watermark'
+        className: 'vjs-watermark',
+	text: false,
+	debug: false
     },
     extend = function() {
       var args, target, i, object, property;
@@ -38,13 +40,14 @@ console.log('watermark: Start');
    * register the thubmnails plugin
    */
   videojs.plugin('watermark', function(settings) {
-    console.log('watermark: Register init');
+    if (settings.debug) console.log('watermark: Register init');
 
-    var options, video, img, link;
+    var options, player, video, img, link;
     options = extend(defaults, settings);
 
     /* Grab the necessary DOM elements */
-    video = this.el();
+    player = this.el();
+    video = this.el().getElementsByTagName('video')[0];
 
     // create the watermark element
     if (!div) {
@@ -91,6 +94,9 @@ console.log('watermark: Start');
     }
     else if ((options.ypos === 50) && (options.xpos === 50)) // Center
     {
+      if (options.debug) console.log('watermark: player:' + player.width + 'x' + player.height);
+      if (options.debug) console.log('watermark: video:' + video.videoWidth + 'x' + video.videoHeight);
+      if (options.debug) console.log('watermark: image:' + img.width + 'x' + img.height);
       div.style.top = (this.height()/2)+"px";
       div.style.left = (this.width()/2)+"px";
     }
@@ -110,13 +116,12 @@ console.log('watermark: Start');
       link.target = "_blank";
       link.appendChild(div);
       //add clickable watermark to the player
-      video.appendChild(link);
+      player.appendChild(link);
     } else {
       //add normal watermark to the player
-      video.appendChild(div);
+      player.appendChild(div);
     }
 
-    //video.oncontextmenu = function(){alert("Hello!");}
-    console.log('watermark: Register end');
+    if (options.debug) console.log('watermark: Register end');
   });
 })();
