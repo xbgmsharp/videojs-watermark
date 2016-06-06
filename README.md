@@ -13,7 +13,7 @@ You probably want to include the default stylesheet, too. It handles showing the
     <link href="videojs.watermark.css" rel="stylesheet">
 
 Once you have your video element created, you can activate the watermark plugin.
-The plugin take 5 options 'file' and 'xpos' and 'ypos' and 'xrepeat' and 'opacity'.
+The plugin take 5 options ``file`` and ``xpos`` and `ypos`` and ``xrepeat`` and ``opacity``.
 It use the CSS show the image over the video.
 
     video.watermark({
@@ -39,6 +39,24 @@ Bottom right:
 Top left:
     xpos: 0
     ypos: 0
+
+Options
+-------
+A few more options has been add to do cool stuff. Here are all the defaults settings.
+```text
+  var defaults = {
+        file: 'Owned_Stamp.png',
+        xpos: 0,
+        ypos: 0,
+        xrepeat: 0,
+        opacity: 100,
+        clickable: false,
+        url: "",
+        className: 'vjs-watermark',
+	text: false,
+        debug: false
+    }
+```
 
 Known Issues
 ------------
