@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link href="../video-js/video-js.css" rel="stylesheet">
+  <title>Video.js Watermark Image Text Example</title>
+  <meta charset="utf-8" />
+  <link href="../video.js/video-js.css" rel="stylesheet">
   <link href="../videojs.watermark.css" rel="stylesheet">
-  <script src="../video-js/video.dev.js"></script>
+  <script src="../video.js/video.js"></script>
   <script>
-    videojs.options.flash.swf = "../video-js/video-js.swf"
+    videojs.options.flash.swf = "../video.js/video-js.swf"
   </script>
   <!-- <script src="../videojs.watermark.js"></script> -->
   <!-- For debugging -->
@@ -19,9 +21,9 @@
   </style>
 </head>
 <body>
-  <p>The watermark plugin display anmn image over the video. Give it a shot:</p>
+  <p>The watermark plugin display an image or text over the video. Give it a shot:</p>
 
-<video id='video_1' class='video-js vjs-default-skin' width='640' height='264' poster='http://videojs.com/img/poster.jpg' controls>
+<video id='video_1' class='video-js vjs-default-skin' width='640' height='264' poster='http://vjs.zencdn.net/v/oceans.png' controls>
  <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
  <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm">
 </video>
@@ -33,9 +35,8 @@ var my_video_id = videojs('video_1');
 // Set value to the plugin
 my_video_id.watermark({
   file: 'Owned_Stamp.png',
-  //file: 'http://www.videojs.com/img/logo.png',
-  xpos: 50,
-  ypos: 50,
+  xpos: 0,
+  ypos: 0,
   xrepeat: 0,
   opacity: 0.5
   });
